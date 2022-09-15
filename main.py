@@ -28,6 +28,7 @@ def add_client(conn, first_name, last_name, email):
         INSERT INTO clients(first_name, last_name, email)
         VALUES (%s, %s, %s)
         """, (first_name, last_name, email))
+        print(f'Клиент {first_name} {last_name} добавлен в базу данных')
 
 def add_phone(conn, client_id, phone_number):
     with conn.cursor() as cur:
@@ -35,6 +36,7 @@ def add_phone(conn, client_id, phone_number):
         INSERT INTO phone_numbers(client_id, phone_number)
         VALUES (%s, %s)
         """, (client_id, phone_number))
+        print(f'Телефон добавлен в базу данных')
 
 def change_client(conn, client_id, first_name=None, last_name=None, email=None, phone_number=None):
     while True:
@@ -45,6 +47,7 @@ def change_client(conn, client_id, first_name=None, last_name=None, email=None, 
             '\n3 - изменить email,'
             '\n4 - изменить номер телефона\n'))
         changing_client_id = input('Введите id клиента')
+
         if command == 1:
             new_client_name = input('Введите новое имя')
             with conn.cursor() as cur:
@@ -52,6 +55,7 @@ def change_client(conn, client_id, first_name=None, last_name=None, email=None, 
             UPDATE clients SET first_name = %s WHERE id = %s;
             """, (new_client_name, changing_client_id))
             break
+
         elif command == 2:
             new_client_surname = input('Введите новую фамилию')
             with conn.cursor() as cur:
@@ -59,6 +63,7 @@ def change_client(conn, client_id, first_name=None, last_name=None, email=None, 
             UPDATE clients SET last_name = %s WHERE id = %s;
             """, (new_client_surname, changing_client_id))
             break
+
         elif command == 3:
             new_client_email = input('Введите email')
             with conn.cursor() as cur:
@@ -66,6 +71,7 @@ def change_client(conn, client_id, first_name=None, last_name=None, email=None, 
             UPDATE clients SET last_name = %s WHERE id = %s;
             """, (new_client_email, changing_client_id))
             break
+
         elif command == 4:
             changing_phone = input('Введите номер, который хотите изменить')
             new_phone = input('Введите новый номер')
@@ -80,17 +86,18 @@ def delete_phone(conn, client_id, phone_number):
         cur.execute("""
     DELETE  FROM phone_numbers WHERE client_id = %s AND phone_number=%s;
     """, (client_id, phone_number))
+        print(f'Номер телефона удален из базы данных')
 
 def delete_client(conn, client_id):
     with conn.cursor() as cur:
         cur.execute("""
     DELETE  FROM phone_numbers WHERE client_id = %s;
-    """, (client_id))
+    """, (client_id,))
     with conn.cursor() as cur:
         cur.execute("""
     DELETE  FROM clients WHERE id = %s;
-    """, (client_id))
-
+    """, (client_id,))
+        print(f'Данные клиента удалены из базы данных')
 
 def find_client(conn, first_name=None, last_name=None, email=None, phone_number=None):
     while True:
@@ -100,6 +107,7 @@ def find_client(conn, first_name=None, last_name=None, email=None, phone_number=
             '\n2 - по фамилии,'
             '\n3 - по email,'
             '\n4 - по номеру телефона\n'))
+
         if command_1 == 1:
             finding_client_name = input('Введите имя: ')
             with conn.cursor() as cur:
@@ -107,8 +115,9 @@ def find_client(conn, first_name=None, last_name=None, email=None, phone_number=
             SELECT first_name, last_name, email, phone_number FROM clients c
             JOIN phone_numbers p ON p.client_id = c.id
             WHERE first_name = %s
-            """, (finding_client_name))
-            print(conn.fetchall())
+            """, (finding_client_name,))
+                print(cur.fetchall())
+                break
 
         elif command_1 == 2:
             finding_client_surname = input('Введите фамилию: ')
@@ -117,8 +126,9 @@ def find_client(conn, first_name=None, last_name=None, email=None, phone_number=
             SELECT first_name, last_name, email, phone_number FROM clients c
             JOIN phone_numbers p ON p.client_id = c.id
             WHERE last_name = %s
-            """, (finding_client_surname))
-            print(conn.fetchall())
+            """, (finding_client_surname,))
+                print(cur.fetchall())
+                break
 
         elif command_1 == 3:
             finding_client_email = input('Введите email: ')
@@ -127,8 +137,9 @@ def find_client(conn, first_name=None, last_name=None, email=None, phone_number=
             SELECT first_name, last_name, email, phone_number FROM clients c
             LEFT JOIN phone_numbers p ON p.client_id = c.id
             WHERE email = %s
-            """, (finding_client_email))
-            print(conn.fetchall())
+            """, (finding_client_email,))
+                print(cur.fetchall())
+                break
 
         elif command_1 == 4:
             finding_phone = input('Введите номер телефона: ')
@@ -137,8 +148,9 @@ def find_client(conn, first_name=None, last_name=None, email=None, phone_number=
             SELECT first_name, last_name, email, phone_number FROM clients c
             LEFT JOIN phone_numbers p ON p.client_id = c.id
             WHERE phone_number = %s
-            """, (finding_phone))
-            print(conn.fetchall())
+            """, (finding_phone,))
+                print(cur.fetchall())
+                break
 
 def select_function(conn):
     with conn.cursor() as cur:
